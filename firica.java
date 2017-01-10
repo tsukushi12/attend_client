@@ -12,14 +12,17 @@ public class firica implements Runnable {
     private Card card;
     private static byte[] readUID = { (byte) 0xFF, (byte) 0xCA, (byte) 0x00, (byte) 0x00, (byte) 0x04 };    //IDmを読むための？
     public String method;
-    public firica(String method) {
-        method = method;
+    firica(String m) {
+        method = m;
         try {
             terminal = TerminalFactory.getDefault().terminals().list().get(0);    //一台目を決め打ち
         } catch (CardException e) {
             System.err.println("読み取り機を取得できませんでした");
             System.exit(-1);
         }
+    }
+    public void seturl(String url){
+        method = url;
     }
     public String readIDm() throws CardException{
         try {
@@ -37,8 +40,7 @@ public class firica implements Runnable {
             try {
                 terminal.waitForCardPresent(0);
 
-                Post p = new Post("192.168.0.8", method);
-                p.execute(readIDm());
+                send(readIDm());
 
                 terminal.waitForCardAbsent(0);
             } catch (CardException e) {
@@ -48,7 +50,11 @@ public class firica implements Runnable {
     }
     public static void main(String[] args) {
         //無限ループスレッドでカードが置かれた時にIDmを表示するアプリケーション
-        Thread thread = new Thread(new firica("create"));
+        Thread thread = new Thread(new firica(args[0]));
         thread.start();
+    }
+    public void send(String id){
+        Post p = new Post("localhost", method);
+        p.execute(id);
     }
 }

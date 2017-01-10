@@ -6,10 +6,12 @@ import java.nio.charset.StandardCharsets;
 
 public class Post {
     HttpURLConnection connection;
+    String res;
     URL url;
     public static void main(String args[]) {
-    Post at = new Post("192.168.0.8", "create");
-        at.execute("1234567890");
+        Post at = new Post("localhost", "create");
+        String resp = at.execute("1234567890");
+        System.out.println(resp);
     }
     Post(String ip, String src) {
         try {
@@ -20,8 +22,7 @@ public class Post {
         } 
     }
 
-    public void execute(String id){
-    
+    public String execute(String id){
         try {
             connection = (HttpURLConnection)url.openConnection();
             connection.setDoOutput(true);
@@ -45,7 +46,7 @@ public class Post {
                 ){
                     String line;
                     while((line = reader.readLine()) != null){
-                        System.out.println(line);
+                        res = line;
                     }
                 }
             }
@@ -56,5 +57,6 @@ public class Post {
                 connection.disconnect();
             }
         }
+        return res;
     }
 }
